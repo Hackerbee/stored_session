@@ -12,12 +12,13 @@ module StoredSession
       app.deprecators[:stored_session] = StoredSession.deprecator
     end
 
-    initializer "stored_session.config" do |app|
+    initializer "stored_session.config", after: :load_config_initializers do |app|
       app.paths.add "config/stored_session", with: "config/stored_session.yml"
       config_exists = Pathname.new(app.config.paths["config/stored_session"].first).exist?
       options = config_exists ? app.config_for(:stored_session).to_h.deep_symbolize_keys : {}
 
       options[:connects_to] = config.stored_session.connects_to if config.stored_session.connects_to
+      options[:encrypt] = config.stored_session.encrypt if config.stored_session.key?(:encrypt)
 
       options[:base_controller_class_name] = config.stored_session.base_controller_class_name if config.stored_session.base_controller_class_name
       options[:base_job_class_name] = config.stored_session.base_job_class_name if config.stored_session.base_job_class_name

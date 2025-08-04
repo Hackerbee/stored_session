@@ -3,7 +3,7 @@ module StoredSession::Model
 
   included do
     serialize :data, coder: ActiveSupport::MessagePack, type: Hash
-    encrypts :data, message_serializer: ActiveRecord::Encryption::MessagePackMessageSerializer.new
+    encrypts :data, message_serializer: ActiveRecord::Encryption::MessagePackMessageSerializer.new if StoredSession.config.encrypt?
 
     scope :by_sid, ->(sid) { where(sid: sid) }
   end
