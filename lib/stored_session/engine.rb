@@ -8,7 +8,7 @@ module StoredSession
 
     config.stored_session = ActiveSupport::OrderedOptions.new
 
-    initializer "stored_session.deprecator", before: :load_environment_config do |app|
+    initializer "stored_session.deprecator", before: "active_support.deprecation_behavior" do |app|
       app.deprecators[:stored_session] = StoredSession.deprecator
     end
 
@@ -34,7 +34,7 @@ module StoredSession
       StoredSession.config = StoredSession::Configuration.new(**options)
     end
 
-    initializer "stored_session.logger" do
+    initializer "stored_session.logger", after: :initialize_logger do
       ActiveSupport.on_load(:stored_session) { self.logger ||= ::Rails.logger }
       StoredSession::LogSubscriber.attach_to :stored_session
     end
