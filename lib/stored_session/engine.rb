@@ -17,6 +17,10 @@ module StoredSession
       config_exists = Pathname.new(app.config.paths["config/stored_session"].first).exist?
       options = config_exists ? app.config_for(:stored_session).to_h.deep_symbolize_keys : {}
 
+      options[:connects_to] = options[:connects_to].deep_transform_values(&:to_sym) if options[:connects_to]
+      # options[:connects_to] = { connects_to: { databases: options[:databases].map(&:to_sym) } } if options[:databases]
+      # options[:connects_to] = { connects_to: { database: options[:database].to_sym } } if options[:database]
+
       options[:connects_to] = config.stored_session.connects_to if config.stored_session.connects_to
       options[:encrypt] = config.stored_session.encrypt if config.stored_session.key?(:encrypt)
 
